@@ -29,8 +29,7 @@ class Settings:
         self.POSTGRES_PORT = int(os.getenv("POSTGRES_PORT", "5432"))
 
         if self.TESTING:
-            self.DATABASE_URL = os.getenv("DATABASE_URL",
-                                          "sqlite:///./test.db")
+            self.DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")
 
         else:
             self.DATABASE_URL = os.getenv(
