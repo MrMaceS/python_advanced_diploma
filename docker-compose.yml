@@ -1,0 +1,56 @@
+services:
+  app:
+    container_name: twitter_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    stop_signal: SIGTERM
+    ports:
+      - "8000:8000"
+    environment:
+      POSTGRES_USER: twitter_user
+      POSTGRES_PASSWORD: twitter_password
+      POSTGRES_DB: twit_db
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+    depends_on:
+      - db
+    networks:
+      - twitter_network
+
+  db:
+    image: postgres:15
+    container_name: twitter_db
+    restart: always
+    environment:
+      POSTGRES_USER: twitter_user
+      POSTGRES_PASSWORD: twitter_password
+      POSTGRES_DB: twit_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - twitter_network
+
+  nginx_web:
+    container_name: nginx_web
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./backend/media:/mnt/media
+      - ./static:/mnt/static:ro
+    restart: always
+    ports:
+      - "8080:80"
+    depends_on:
+      - app
+    networks:
+      - twitter_network
+
+networks:
+  twitter_network:
+    driver: bridge
+
+volumes:
+  pgdata:
