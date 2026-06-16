@@ -38,5 +38,14 @@ jobs:
       - name: Run mypy
         run: mypy backend
 
+      - name: Prepare test database
+        env:
+          TESTING: "1"
+        run: |
+          python init_db.py
+          python seed_db.py
+
       - name: Run pytest
+        env:
+          TESTING: "1"
         run: pytest
